@@ -33,7 +33,8 @@ var GameDB = function () {
                                           timestamp: null,
                                           last: null,
                                           rnow: null,
-                                          diff:null
+                                          diff:null,
+                                          counter:null
                                           });
     
     LocalContractStorage.defineMapProperty(this, "game", {
@@ -56,6 +57,7 @@ GameDB.prototype = {
         this.last = null;
         this.rnow = 0;
         this.diff = 0;
+        this.counter =0;
         var gametoutie = new Game();
         this.game.put(0, gametoutie);
         
@@ -97,13 +99,33 @@ addlife: function(){
         if(this.diff < 3600* 1000){
             this.timestamp = now;
             this.last = from;
-            this.balance = bvalue.add(this.balance);
             
-            var trysave = this.game.get(0);
-            trysave.last = this.last;
-            trysave.balance = this.balance;
-         
-            this.game.set(0,trysave);
+            if(this.counter==7){
+                this.counter = this.counter -7;
+                var backmoney = new BigNumber(0.0001);
+                var bresult = Blockchain.transfer(this.last, backmoney.times(0.99));
+                if (!bresult) {
+                    Event.Trigger("awardtransferfailde", {
+                                  Transfer: {
+                                  from: Blockchain.transaction.to,
+                                  to: this.last,
+                                  value: this.balance
+                                  }
+                                  });
+                    throw new Error("award failed");
+                }
+                
+            }else{
+                this.balance = bvalue.add(this.balance);
+                
+                var trysave = this.game.get(0);
+                trysave.last = this.last;
+                trysave.balance = this.balance;
+                
+                this.game.set(0,trysave);
+            }
+           
+            this.counter++;
             
         }else{
             
@@ -154,7 +176,17 @@ addlife: function(){
 //
 //    }
     
-
+donate:function(){
+    var bvalue = new BigNumber(Blockchain.transaction.value);
+    this.balance = bvalue.add(this.balance);
+    
+    var trysave = this.game.get(0);
+    trysave.last = this.last;
+    trysave.balance = this.balance;
+    
+    this.game.set(0,trysave);
+    
+},
     
 claimwin:function(){
     var now = new Date().getTime();

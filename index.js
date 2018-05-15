@@ -2,16 +2,22 @@ var NebPay = require("nebpay");
 var nebPay = new NebPay();
 var daojishi = document.getElementById('daojishi');
 var donate = document.getElementById('donate');
+var authortx = document.getElementById('author');
+var pictx =document.getElementById('pic')
+var shengmingtx = document.getElementById('shengming');
+shengmingtx.onclick=shengming;
+pictx.onclick=pic;
+donate.onclick=donatein;
 var addlifea = document.getElementById('add');
 add.onclick=addlife;
 var calca = document.getElementById('calc');
 calca.onclick=claimwin;
-
+authortx.onclick =author;
 var checkinfo = document.getElementById('check');
 checkinfo.onclick= getGame;
 //addlifea.onclick=addlife();
 var now = new Date().getTime();
-var dappAddress = "n1rAkcvWrwpF2tEonLw9S3etuy3ADjXeZuN";
+var dappAddress = "n1tk16qMKYU9ioNa9mNjmSJC2g2s9kt7678";
 //to check if the extension is installed
 //if the extension is installed, var "webExtensionWallet" will be injected in to web page
 if(typeof(webExtensionWallet) != "undefined"){
@@ -69,6 +75,27 @@ function addlife(){
                 });
 }
 
+function donatein(){
+    var to = dappAddress;
+    var value = 0.0001;
+    var func = "donate"
+    var args = "[\"" + 0 + "\"]";
+    
+    // var callArgs = "[\"" + document.getElementById("inputParameter").value.trim() + "\"]"; //in the form of ["args"]
+    nebPay.call(to, value, func, args, {
+                qrcode: {
+                showQRCode: false
+                },
+                goods: {
+                name: "test",
+                desc: "test goods"
+                },
+                //callback: cbCallDapp
+                listener: cbCallDapp
+                });
+    
+}
+
 function claimwin(){
     var to = dappAddress;
     var value = 0.000;
@@ -89,7 +116,35 @@ function claimwin(){
                 });
 
 }
+function pic(){
+    var test=parseInt(Math.random()*100);
+    console.log(test);
+    if(test<10){
+           layer.msg('听说你也来比赛头铁');
+    }else if(test>10 && test < 50){
+        layer.msg('争当铁头娃');
+        
+    }else if(test>50 &&test<55){
+        layer.msg('有些东西翻过来比较对');
+        
+    }else if(test>55 && test <90){
+               layer.msg('贵在坚持');
+    }else if(test>90 && test <92){
+        layer.msg('134661245');
+        
+    }else{
+        layer.msg('想联系作者吗，加个qq呗XD');
+        
+    }
+    
+}
 
+function author(){
+           layer.msg('独立开发者，第一批国内开发以太坊dapp游戏的开发者，多年编程经验，头很铁，就是喜欢做自己想做的游戏～任何bug反馈欢迎联系游戏danjinxiangsi@gmail.com -Ling ',{time:0,btn: ['确定'],shade: 0.8});
+}
+function shengming(){
+    layer.msg('所有素材来自于开发性素材，合约一旦启动，开发者并无从里赚钱的功能，请放心玩耍。本游戏内置彩蛋，增加点点趣味性XD',{time:0,btn: ['确定'],shade: 0.8});
+}
 
 function cbCallDapp(resp){
   
